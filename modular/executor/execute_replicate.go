@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"sync"
 	"time"
@@ -41,9 +42,12 @@ func (e *ExecuteModular) HandleReplicatePieceTask(ctx context.Context, task core
 		return
 	}
 	log.CtxDebugw(ctx, "succeed to replicate all pieces", "task_info", task.Info())
+	for _, sspBlsSig := range task.GetSecondarySignatures() {
+		log.Debugf("ssp bls sig is %s", hex.EncodeToString(sspBlsSig))
+	}
 
 	if blsSig, err = bls.MultipleSignaturesFromBytes(task.GetSecondarySignatures()); err != nil {
-		log.CtxErrorw(ctx, "failed to generate multiple signatures",
+		log.CtxError(ctx, "failed to generate multiple signatures",
 			"origin_signature", task.GetSecondarySignatures(), "error", err)
 		return
 	} else {
@@ -58,6 +62,10 @@ func (e *ExecuteModular) HandleReplicatePieceTask(ctx context.Context, task core
 		GlobalVirtualGroupId:        task.GetGlobalVirtualGroupId(),
 		SecondarySpBlsAggSignatures: bls.AggregateSignatures(blsSig).Marshal(),
 	}
+
+	aggSig := bls.AggregateSignatures(blsSig).Marshal()
+	log.Debugf("bls aggregated sig is %s", hex.EncodeToString(aggSig))
+
 	sealTime := time.Now()
 	sealErr := e.sealObject(ctx, task, sealMsg)
 	metrics.PerfPutObjectTime.WithLabelValues("background_seal_object_cost").Observe(time.Since(sealTime).Seconds())

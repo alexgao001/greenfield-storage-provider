@@ -2,6 +2,7 @@ package signer
 
 import (
 	"context"
+	"encoding/hex"
 	"net/http"
 
 	sdkmath "cosmossdk.io/math"
@@ -102,11 +103,13 @@ func (s *SignModular) SignReceivePieceTask(ctx context.Context, task task.Receiv
 
 func (s *SignModular) SignSecondaryBls(ctx context.Context, objectID uint64, gvgId uint32, checksums [][]byte) ([]byte, error) {
 	msg := storagetypes.NewSecondarySpSealObjectSignDoc(s.baseApp.ChainID(), gvgId, sdkmath.NewUint(objectID), storagetypes.GenerateHash(checksums)).GetBlsSignHash()
+	log.Debugf("NewSecondarySpSealObjectSignDoc is %s", hex.EncodeToString(msg[:]))
 	sig, err := s.client.sealBlsKm.Sign(msg[:])
 	if err != nil {
 		return nil, err
 	}
-	// log.Debugw("bls signature length", "len", len(sig), "object_id", objectID, "gvg_id", gvgId, "checksums", checksums)
+	log.Debugf("signer pub key is %s", hex.EncodeToString(s.client.sealBlsKm.PubKey().Bytes()))
+	log.Debugf("bls signature is %s", hex.EncodeToString(sig))
 	return sig, nil
 }
 
