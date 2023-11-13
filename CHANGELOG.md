@@ -1,10 +1,17 @@
 # Changelog
 
+## v1.0.5
+This release contains 2 bugfix.
+
+BUGFIXES
+* [#1229](https://github.com/bnb-chain/greenfield-storage-provider/pull/1229) fix: sp should resume picking VGF regardless of RPC error
+* [#1239](https://github.com/bnb-chain/greenfield-storage-provider/pull/1239) fix: add timeout for RPC calls to Secondary SP
+
 ## v1.0.4
 This release contains 1 bugfix.
 
 BUGFIXES
-* [#1231](https://github.com/bnb-chain/greenfield-storage-provider/pull/1231) fix: fix: add config sp blacklist
+* [#1231](https://github.com/bnb-chain/greenfield-storage-provider/pull/1231) fix: add config sp blacklist
 
 ## v1.0.3
 This release contains 1 bugfix.
